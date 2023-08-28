@@ -1,0 +1,76 @@
+openapi: '3.0.0'
+
+info:
+  version: 1.0.0
+  title: Clientes
+  description: Gestión de clientes
+
+servers:
+  - url: http://localhost:8581
+
+paths:
+  /clients:
+    post:
+      summary: Save Client
+      operationId: saveClient
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ClientDTO'
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ClientDTO'
+  /clients/{id}:
+    get:
+      summary: Get client by id
+      operationId: getClientById
+      parameters:
+        - name: id
+          in: path
+          description: Unique id of an client
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ClientDTO'
+
+components:
+  schemas:
+    ClientDTO:
+      type: object
+      description: Data element for client
+      properties:
+        clientId:
+          type: string
+        clientType:
+          type: string
+        name:
+          type: string
+        fatherLastName:
+          type: string
+        motherLastName:
+          type: string
+        businessName:
+          type: string
+        documentType:
+          type: string
+        documentNumber:
+          type: string
+        birthdate:
+          type: string
+        address:
+          type: string
+        phoneNumber:
+          type: string
+        email:
+          type: string
