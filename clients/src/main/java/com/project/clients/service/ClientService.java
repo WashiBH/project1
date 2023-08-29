@@ -2,63 +2,59 @@ package com.project.clients.service;
 
 import com.project.clients.entity.Client;
 import com.project.clients.exception.ClientNotFoundException;
+import com.project.clients.mapper.ClientDtoToEntity;
+import com.project.clients.mapper.ClientEntityToDto;
 import com.project.clients.model.ClientDTO;
+import com.project.clients.model.ClientUpdateDTO;
 import com.project.clients.repository.ClientRepository;
+import io.reactivex.rxjava3.core.Maybe;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
 
 @Service
 public class ClientService {
     @Autowired
     private ClientRepository clientRepository;
 
-    public List<Client> findAll(){
-        return clientRepository.findAll();
-    }
+    @Autowired
+    private ClientDtoToEntity mapperToEntity;
 
-    public ClientDTO findClientById(String id){
+    @Autowired
+    private ClientEntityToDto mapperToDto;
+
+    public Maybe<ClientDTO> findClientById(String id){
         Client client = clientRepository.findById(id).orElse(null);
-        ClientDTO clientDto = new ClientDTO();
-        clientDto.setClientId(client.getId());
-        clientDto.setClientType(client.getClientType());
-        clientDto.setName(client.getName());
-        clientDto.setFatherLastName(client.getFatherLastName());
-        clientDto.setMotherLastName(client.getMotherLastName());
-        clientDto.setBusinessName(client.getBusinessName());
-        clientDto.setDocumentType(client.getDocumentType());
-        clientDto.setDocumentNumber(client.getDocumentNumber());
-        clientDto.setBirthdate(client.getBirthdate());
-        clientDto.setAddress(client.getAddress());
-        clientDto.setPhoneNumber(client.getPhoneNumber());
-        clientDto.setEmail(client.getEmail());
-
-        return Optional.ofNullable(clientDto)
-                .orElseThrow(() -> new ClientNotFoundException("Client not found for Id: " + id));
+        return Maybe.just(mapperToDto.map(client));
     }
 
-    public ClientDTO save(ClientDTO clientDto){
+    public Maybe<ClientDTO> save(ClientDTO clientDto){
+        Client client = mapperToEntity.map(clientDto);
+        client = clientRepository.save(client);
+        return Maybe.just(mapperToDto.map(client));
+    }
 
-        Client client = new Client();
-        client.setClientType(clientDto.getClientType());
-        client.setName(clientDto.getName());
-        client.setFatherLastName(clientDto.getFatherLastName());
-        client.setMotherLastName(clientDto.getMotherLastName());
-        client.setBusinessName(clientDto.getBusinessName());
-        client.setDocumentType(clientDto.getDocumentType());
-        client.setDocumentNumber(clientDto.getDocumentNumber());
-        client.setBirthdate(clientDto.getBirthdate());
-        client.setAddress(clientDto.getAddress());
-        client.setPhoneNumber(clientDto.getPhoneNumber());
-        client.setEmail(clientDto.getEmail());
+    public ClientDTO update(String id, ClientUpdateDTO clientUpdateDto){
+
+        Client client = clientRepository.findById(id).orElse(null);
+        //client.setClientType(clientUpdateDto.getClientType());
+        client.setName(clientUpdateDto.getName());
+        client.setFatherLastName(clientUpdateDto.getFatherLastName());
+        client.setMotherLastName(clientUpdateDto.getMotherLastName());
+        client.setBusinessName(clientUpdateDto.getBusinessName());
+        client.setDocumentType(clientUpdateDto.getDocumentType());
+        client.setDocumentNumber(clientUpdateDto.getDocumentNumber());
+        client.setBirthdate(clientUpdateDto.getBirthdate());
+        client.setAddress(clientUpdateDto.getAddress());
+        client.setPhoneNumber(clientUpdateDto.getPhoneNumber());
+        client.setEmail(clientUpdateDto.getEmail());
 
         client = clientRepository.save(client);
 
+        ClientDTO clientDto = new ClientDTO();
         clientDto.setClientId(client.getId());
-        clientDto.setClientType(client.getClientType());
+        //clientDto.setClientType(client.getClientType());
         clientDto.setName(client.getName());
         clientDto.setFatherLastName(client.getFatherLastName());
         clientDto.setMotherLastName(client.getMotherLastName());
@@ -71,6 +67,6 @@ public class ClientService {
         clientDto.setEmail(client.getEmail());
 
         return Optional.ofNullable(clientDto)
-                .orElseThrow(() -> new ClientNotFoundException("Not save client"));
+                .orElseThrow(() -> new ClientNotFoundException("Not update client"));
     }
 }

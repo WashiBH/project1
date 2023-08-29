@@ -43,6 +43,28 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ClientDTO'
+    put:
+      summary: Update Client
+      operationId: updateClient
+      parameters:
+        - name: id
+          in: path
+          description: Unique id of an client
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ClientUpdateDTO'
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ClientDTO'
 
 components:
   schemas:
@@ -52,6 +74,35 @@ components:
       properties:
         clientId:
           type: string
+        clientType:
+          type: string
+          enum:
+            - PERSONA
+            - EMPRESA
+        name:
+          type: string
+        fatherLastName:
+          type: string
+        motherLastName:
+          type: string
+        businessName:
+          type: string
+        documentType:
+          type: string
+        documentNumber:
+          type: string
+        birthdate:
+          type: string
+        address:
+          type: string
+        phoneNumber:
+          type: string
+        email:
+          type: string
+    ClientUpdateDTO:
+      type: object
+      description: Data element for client
+      properties:
         clientType:
           type: string
         name:
