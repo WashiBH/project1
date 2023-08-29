@@ -25,6 +25,18 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ClientDTO'
+    get:
+      summary: Get clients
+      operationId: getClients
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ClientDTO'
   /clients/{id}:
     get:
       summary: Get client by id
@@ -57,7 +69,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/ClientUpdateDTO'
+              $ref: '#/components/schemas/ClientDTO'
       responses:
         200:
           description: OK
@@ -79,32 +91,6 @@ components:
           enum:
             - PERSONA
             - EMPRESA
-        name:
-          type: string
-        fatherLastName:
-          type: string
-        motherLastName:
-          type: string
-        businessName:
-          type: string
-        documentType:
-          type: string
-        documentNumber:
-          type: string
-        birthdate:
-          type: string
-        address:
-          type: string
-        phoneNumber:
-          type: string
-        email:
-          type: string
-    ClientUpdateDTO:
-      type: object
-      description: Data element for client
-      properties:
-        clientType:
-          type: string
         name:
           type: string
         fatherLastName:

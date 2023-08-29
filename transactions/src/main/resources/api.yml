@@ -1,0 +1,104 @@
+openapi: '3.0.0'
+
+info:
+  version: 1.0.0
+  title: Transacciones
+  description: Gestión de transacciones o movimientos bancarios
+
+servers:
+  - url: http://localhost:8584
+
+paths:
+  /transactions:
+    post:
+      summary: Save Transaction
+      operationId: saveTransaction
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TransactionDTO'
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TransactionDTO'
+    get:
+      summary: Get transactions
+      operationId: getTransactions
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/TransactionDTO'
+  /transactions/{id}:
+    get:
+      summary: Get Transaction by id
+      operationId: getTransactionById
+      parameters:
+        - name: id
+          in: path
+          description: Unique id of an transaction
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TransactionDTO'
+    put:
+      summary: Update Transaction
+      operationId: updateTransaction
+      parameters:
+        - name: id
+          in: path
+          description: Unique id of a transaction
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TransactionDTO'
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TransactionDTO'
+
+components:
+  schemas:
+    TransactionDTO:
+      type: object
+      description: Data element for transaction
+      properties:
+        transactionId:
+          type: string
+        client:
+          type: string
+        type:
+          type: string
+        amount:
+          type: number
+        origin:
+          type: string
+        destiny:
+          type: string
+      required:
+        - client
+        - type
+        - amount
+        - origin
+        - destiny

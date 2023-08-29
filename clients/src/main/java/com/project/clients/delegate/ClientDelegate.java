@@ -2,11 +2,12 @@ package com.project.clients.delegate;
 
 import com.project.clients.api.ClientsApiDelegate;
 import com.project.clients.model.ClientDTO;
-import com.project.clients.model.ClientUpdateDTO;
 import com.project.clients.service.ClientService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 public class ClientDelegate implements ClientsApiDelegate {
@@ -23,13 +24,18 @@ public class ClientDelegate implements ClientsApiDelegate {
     }
 
     @Override
+    public ResponseEntity<List<ClientDTO>> getClients() {
+        return ResponseEntity.ok(clientService.findAll().blockingSingle());
+    }
+
+    @Override
     public ResponseEntity<ClientDTO> saveClient(ClientDTO clientDTO) {
         return ResponseEntity.ok(clientService.save(clientDTO).blockingGet());
     }
 
     @Override
-    public ResponseEntity<ClientDTO> updateClient(String id, ClientUpdateDTO clientUpdateDTO) {
-        return ResponseEntity.ok(clientService.update(id, clientUpdateDTO));
+    public ResponseEntity<ClientDTO> updateClient(String id, ClientDTO clientDTO) {
+        return ResponseEntity.ok(clientService.update(id, clientDTO).blockingGet());
     }
 
 }

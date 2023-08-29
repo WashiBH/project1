@@ -1,0 +1,101 @@
+openapi: '3.0.0'
+
+info:
+  version: 1.0.0
+  title: Creditos o prestamos
+  description: Gestión de creditos
+
+servers:
+  - url: http://localhost:8583
+
+paths:
+  /credits:
+    post:
+      summary: Save Credit
+      operationId: saveCredit
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreditDTO'
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreditDTO'
+    get:
+      summary: Get credits
+      operationId: getCredits
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/CreditDTO'
+  /credits/{id}:
+    get:
+      summary: Get Credit by id
+      operationId: getCreditById
+      parameters:
+        - name: id
+          in: path
+          description: Unique id of an credit
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreditDTO'
+    put:
+      summary: Update Credit
+      operationId: updateCredit
+      parameters:
+        - name: id
+          in: path
+          description: Unique id of a credit
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreditDTO'
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreditDTO'
+
+components:
+  schemas:
+    CreditDTO:
+      type: object
+      description: Data element for credit
+      properties:
+        creditId:
+          type: string
+        type:
+          type: string
+          enum:
+            - PERSONA
+            - EMPRESA
+        client:
+          type: string
+        amount:
+          type: number
+      required:
+        - type
+        - client
+        - amount

@@ -1,0 +1,104 @@
+openapi: '3.0.0'
+
+info:
+  version: 1.0.0
+  title: Accounts
+  description: Gestión de cuentas bancarias
+
+servers:
+  - url: http://localhost:8582
+
+paths:
+  /accounts:
+    post:
+      summary: Save Account
+      operationId: saveAccount
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AccountDTO'
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AccountDTO'
+    get:
+      summary: Get accounts
+      operationId: getAccounts
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/AccountDTO'
+  /accounts/{id}:
+    get:
+      summary: Get Account by id
+      operationId: getAccountById
+      parameters:
+        - name: id
+          in: path
+          description: Unique id of an account
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AccountDTO'
+    put:
+      summary: Update Account
+      operationId: updateAccount
+      parameters:
+        - name: id
+          in: path
+          description: Unique id of an account
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AccountDTO'
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AccountDTO'
+
+components:
+  schemas:
+    AccountDTO:
+      type: object
+      description: Data element for account
+      properties:
+        accountId:
+          type: string
+        accountNumber:
+          type: string
+        type:
+          type: string
+          enum:
+            - AHORRO
+            - CORRIENTE
+            - PLAZO_FIJO
+        client:
+          type: string
+        balance:
+          type: number
+      required:
+        - type
+        - client
+        - balance
