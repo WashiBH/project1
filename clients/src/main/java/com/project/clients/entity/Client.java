@@ -1,6 +1,5 @@
 package com.project.clients.entity;
 
-import com.project.clients.model.ClientDTO;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -13,7 +12,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 public class Client {
     @Id
     private String id;
-    private ClientDTO.ClientTypeEnum clientType;
+    private String clientType;
     private String name;
     private String fatherLastName;
     private String motherLastName;

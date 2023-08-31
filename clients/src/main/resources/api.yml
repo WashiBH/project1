@@ -8,24 +8,31 @@ info:
 servers:
   - url: http://localhost:8581
 
+tags:
+  - name: clients
+
 paths:
   /clients:
     post:
+      tags:
+        - clients
       summary: Save Client
       operationId: saveClient
       requestBody:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/ClientDTO'
+              $ref: '#/components/schemas/ClientReq'
       responses:
         200:
           description: OK
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ClientDTO'
+                $ref: '#/components/schemas/ClientRes'
     get:
+      tags:
+        - clients
       summary: Get clients
       operationId: getClients
       responses:
@@ -36,9 +43,11 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/ClientDTO'
+                  $ref: '#/components/schemas/ClientRes'
   /clients/{id}:
     get:
+      tags:
+        - clients
       summary: Get client by id
       operationId: getClientById
       parameters:
@@ -54,14 +63,16 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ClientDTO'
+                $ref: '#/components/schemas/ClientRes'
     put:
+      tags:
+        - clients
       summary: Update Client
       operationId: updateClient
       parameters:
         - name: id
           in: path
-          description: Unique id of an client
+          description: Unique id of a client
           required: true
           schema:
             type: string
@@ -69,23 +80,41 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/ClientDTO'
+              $ref: '#/components/schemas/ClientReq'
       responses:
         200:
           description: OK
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ClientDTO'
+                $ref: '#/components/schemas/ClientRes'
+  /clients/{id}/type:
+    get:
+      tags:
+        - clients
+      summary: Get client type
+      operationId: getClientType
+      parameters:
+        - name: id
+          in: path
+          description: Unique id of a client
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ClientTypeRes'
 
 components:
   schemas:
-    ClientDTO:
+    ClientReq:
       type: object
       description: Data element for client
       properties:
-        clientId:
-          type: string
         clientType:
           type: string
           enum:
@@ -110,4 +139,38 @@ components:
         phoneNumber:
           type: string
         email:
+          type: string
+    ClientRes:
+      type: object
+      description: Data element for client
+      properties:
+        clientId:
+          type: string
+        clientType:
+          type: string
+        name:
+          type: string
+        fatherLastName:
+          type: string
+        motherLastName:
+          type: string
+        businessName:
+          type: string
+        documentType:
+          type: string
+        documentNumber:
+          type: string
+        birthdate:
+          type: string
+        address:
+          type: string
+        phoneNumber:
+          type: string
+        email:
+          type: string
+    ClientTypeRes:
+      type: object
+      description: Data client type value
+      properties:
+        value:
           type: string

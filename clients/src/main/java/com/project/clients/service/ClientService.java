@@ -1,12 +1,14 @@
 package com.project.clients.service;
 
 import com.project.clients.entity.Client;
-import com.project.clients.mapper.ClientDtoToEntity;
-import com.project.clients.mapper.ClientEntityToDto;
-import com.project.clients.model.ClientDTO;
+import com.project.clients.mapper.ClientEntityToRes;
+import com.project.clients.mapper.ClientReqToEntity;
+import com.project.clients.model.ClientReq;
+import com.project.clients.model.ClientRes;
 import com.project.clients.repository.ClientRepository;
 import io.reactivex.rxjava3.core.Maybe;
 import io.reactivex.rxjava3.core.Observable;
+import io.reactivex.rxjava3.core.Single;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -15,41 +17,44 @@ import java.util.stream.Collectors;
 
 @Service
 public class ClientService {
-    @Autowired
-    private ClientRepository clientRepository;
+    private final ClientRepository clientRepository;
 
     @Autowired
-    private ClientDtoToEntity mapperDtoToEntity;
+    public ClientService( ClientRepository clientRepository) {
+        this.clientRepository = clientRepository;
+    }
 
-    @Autowired
-    private ClientEntityToDto mapperEntityToDto;
-
-    public Observable<List<ClientDTO>> findAll(){
+    public Observable<List<ClientRes>> findAll(){
         return Observable.just(clientRepository.findAll()
                 .stream()
-                .map(x -> mapperEntityToDto.map(x))
+                .map(ClientEntityToRes::map)
                 .collect(Collectors.toList())
         );
     }
 
-    public Maybe<ClientDTO> findClientById(String id){
-        Client client = clientRepository.findById(id).orElse(null);
-        return Maybe.just(mapperEntityToDto.map(client));
+    public Maybe<ClientRes> findClientById(String id) {
+        return Maybe.fromCallable(() -> clientRepository.findById(id).orElse(null))
+                .map(ClientEntityToRes::map);
     }
 
-    public Maybe<ClientDTO> save(ClientDTO clientDto){
-        Client client = mapperDtoToEntity.map(clientDto);
-        client = clientRepository.save(client);
-        return Maybe.just(mapperEntityToDto.map(client));
-    }
-
-    public Maybe<ClientDTO> update(String id, ClientDTO clientDto){
-
-        if(clientRepository.existsById(id)){
-            Client client = mapperDtoToEntity.map(clientDto);
+    public Maybe<ClientRes> save(ClientReq clientReq) {
+        return Maybe.fromCallable(() -> {
+            Client client = ClientReqToEntity.map(clientReq,null);
             client = clientRepository.save(client);
-        }
-
-        return Maybe.just(clientDto);
+            return ClientEntityToRes.map(client);
+        });
     }
+
+    public Maybe<ClientRes> update(String id, ClientReq clientReq) {
+        return Maybe.defer(() -> {
+            if (clientRepository.existsById(id)) {
+                Client client = ClientReqToEntity.map(clientReq,id);
+                client = clientRepository.save(client);
+                return Maybe.just(ClientEntityToRes.map(client));
+            } else {
+                return Maybe.empty();
+            }
+        });
+    }
+
 }

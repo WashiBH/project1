@@ -7,25 +7,31 @@ info:
 
 servers:
   - url: http://localhost:8582
-
+tags:
+  - name: accounts
+  - name: holders
 paths:
   /accounts:
     post:
+      tags:
+        - accounts
       summary: Save Account
       operationId: saveAccount
       requestBody:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/AccountDTO'
+              $ref: '#/components/schemas/AccountReq'
       responses:
         200:
           description: OK
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/AccountDTO'
+                $ref: '#/components/schemas/AccountRes'
     get:
+      tags:
+        - accounts
       summary: Get accounts
       operationId: getAccounts
       responses:
@@ -36,9 +42,11 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/AccountDTO'
+                  $ref: '#/components/schemas/AccountRes'
   /accounts/{id}:
     get:
+      tags:
+        - accounts
       summary: Get Account by id
       operationId: getAccountById
       parameters:
@@ -54,8 +62,10 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/AccountDTO'
+                $ref: '#/components/schemas/AccountRes'
     put:
+      tags:
+        - accounts
       summary: Update Account
       operationId: updateAccount
       parameters:
@@ -69,25 +79,86 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/AccountDTO'
+              $ref: '#/components/schemas/AccountReq'
       responses:
         200:
           description: OK
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/AccountDTO'
+                $ref: '#/components/schemas/AccountRes'
+  /accounts/clients/{id}:
+    get:
+      tags:
+        - accounts
+      summary: Get Account by client
+      operationId: getAccountsByClient
+      parameters:
+        - name: id
+          in: path
+          description: Unique id of an account
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/AccountClientRes'
+  /holders:
+    post:
+      tags:
+        - holders
+      summary: Save Holder
+      operationId: saveHolder
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/HolderReq'
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HolderRes'
+  /holders/{id}:
+    put:
+      tags:
+        - holders
+      summary: Update Holder
+      operationId: updateHolder
+      parameters:
+        - name: id
+          in: path
+          description: Unique id of an holder
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/HolderReq'
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HolderRes'
 
 components:
   schemas:
-    AccountDTO:
+    AccountReq:
       type: object
       description: Data element for account
       properties:
-        accountId:
-          type: string
-        accountNumber:
-          type: string
         type:
           type: string
           enum:
@@ -102,3 +173,60 @@ components:
         - type
         - client
         - balance
+    AccountRes:
+      type: object
+      description: Data element for account
+      properties:
+        accountId:
+          type: string
+        accountNumber:
+          type: string
+        type:
+          type: string
+        client:
+          type: string
+        balance:
+          type: number
+    AccountClientRes:
+      type: object
+      description: Data element for account
+      properties:
+        accountId:
+          type: string
+        accountNumber:
+          type: string
+        type:
+          type: string
+        client:
+          type: string
+        balance:
+          type: number
+        holders:
+          type: array
+          items:
+            $ref: '#/components/schemas/HolderRes'
+    HolderReq:
+      type: object
+      description: Data element for holder
+      properties:
+        account:
+          type: string
+        authorized:
+          type: string
+          enum:
+            - SI
+            - NO
+        names:
+          type: string
+    HolderRes:
+      type: object
+      description: Data element for holder
+      properties:
+        holderId:
+          type: string
+        account:
+          type: string
+        authorized:
+          type: string
+        names:
+          type: string

@@ -1,7 +1,9 @@
 package com.project.accounts.delegate;
 
 import com.project.accounts.api.AccountsApiDelegate;
-import com.project.accounts.model.AccountDTO;
+import com.project.accounts.model.AccountClientRes;
+import com.project.accounts.model.AccountReq;
+import com.project.accounts.model.AccountRes;
 import com.project.accounts.service.AccountService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -19,22 +21,27 @@ public class AccountDelegate implements AccountsApiDelegate {
     }
 
     @Override
-    public ResponseEntity<AccountDTO> getAccountById(String id) {
+    public ResponseEntity<AccountRes> getAccountById(String id) {
         return ResponseEntity.ok(accountService.findAccountById(id).blockingGet());
     }
 
     @Override
-    public ResponseEntity<List<AccountDTO>> getAccounts() {
+    public ResponseEntity<List<AccountRes>> getAccounts() {
         return ResponseEntity.ok(accountService.findAll().blockingSingle());
     }
 
     @Override
-    public ResponseEntity<AccountDTO> saveAccount(AccountDTO accountDTO) {
-        return ResponseEntity.ok(accountService.save(accountDTO).blockingGet());
+    public ResponseEntity<List<AccountClientRes>> getAccountsByClient(String id) {
+        return ResponseEntity.ok(accountService.getAccountsByClient(id).blockingGet());
     }
 
     @Override
-    public ResponseEntity<AccountDTO> updateAccount(String id, AccountDTO accountDTO) {
-        return ResponseEntity.ok(accountService.update(id, accountDTO).blockingGet());
+    public ResponseEntity<AccountRes> saveAccount(AccountReq accountReq) {
+        return ResponseEntity.ok(accountService.save(accountReq).blockingGet());
+    }
+
+    @Override
+    public ResponseEntity<AccountRes> updateAccount(String id, AccountReq accountReq) {
+        return ResponseEntity.ok(accountService.update(id, accountReq).blockingGet());
     }
 }

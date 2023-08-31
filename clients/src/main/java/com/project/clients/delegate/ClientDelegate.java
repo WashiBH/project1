@@ -1,8 +1,11 @@
 package com.project.clients.delegate;
 
 import com.project.clients.api.ClientsApiDelegate;
-import com.project.clients.model.ClientDTO;
+import com.project.clients.model.ClientReq;
+import com.project.clients.model.ClientRes;
+import com.project.clients.model.ClientTypeRes;
 import com.project.clients.service.ClientService;
+import com.project.clients.service.ClientTypeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -12,30 +15,37 @@ import java.util.List;
 @Service
 public class ClientDelegate implements ClientsApiDelegate {
     private final ClientService clientService;
+    private final ClientTypeService clientTypeService;
 
     @Autowired
-    public ClientDelegate(ClientService clientService) {
+    public ClientDelegate(ClientService clientService, ClientTypeService clientTypeService) {
         this.clientService = clientService;
+        this.clientTypeService = clientTypeService;
     }
 
     @Override
-    public ResponseEntity<ClientDTO> getClientById(String id) {
+    public ResponseEntity<ClientRes> getClientById(String id) {
         return ResponseEntity.ok(clientService.findClientById(id).blockingGet());
     }
 
     @Override
-    public ResponseEntity<List<ClientDTO>> getClients() {
+    public ResponseEntity<ClientTypeRes> getClientType(String id) {
+        return ResponseEntity.ok(clientTypeService.getClientType(id).blockingGet());
+    }
+
+    @Override
+    public ResponseEntity<List<ClientRes>> getClients() {
         return ResponseEntity.ok(clientService.findAll().blockingSingle());
     }
 
     @Override
-    public ResponseEntity<ClientDTO> saveClient(ClientDTO clientDTO) {
-        return ResponseEntity.ok(clientService.save(clientDTO).blockingGet());
+    public ResponseEntity<ClientRes> saveClient(ClientReq clientReq) {
+        return ResponseEntity.ok(clientService.save(clientReq).blockingGet());
     }
 
     @Override
-    public ResponseEntity<ClientDTO> updateClient(String id, ClientDTO clientDTO) {
-        return ResponseEntity.ok(clientService.update(id, clientDTO).blockingGet());
+    public ResponseEntity<ClientRes> updateClient(String id, ClientReq clientReq) {
+        return ResponseEntity.ok(clientService.update(id, clientReq).blockingGet());
     }
 
 }
