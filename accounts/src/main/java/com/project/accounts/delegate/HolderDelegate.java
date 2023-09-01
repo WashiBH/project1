@@ -18,11 +18,11 @@ public class HolderDelegate implements HoldersApiDelegate {
 
     @Override
     public ResponseEntity<HolderRes> saveHolder(HolderReq holderReq) {
-        return ResponseEntity.ok(holderService.save(holderReq).blockingGet());
+        return ResponseEntity.ok(holderService.save(holderReq));
     }
 
     @Override
     public ResponseEntity<HolderRes> updateHolder(String id, HolderReq holderReq) {
-        return ResponseEntity.ok(holderService.update(id, holderReq).blockingGet());
+        return ResponseEntity.ok(holderService.update(id, holderReq));
     }
 }

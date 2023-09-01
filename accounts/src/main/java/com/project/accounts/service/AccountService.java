@@ -1,7 +1,6 @@
 package com.project.accounts.service;
 
 import com.project.accounts.entity.Account;
-import com.project.accounts.entity.Holder;
 import com.project.accounts.mapper.AccountReqToEntity;
 import com.project.accounts.mapper.AccountEntityToRes;
 import com.project.accounts.mapper.HolderEntityToRes;
@@ -22,65 +21,35 @@ import java.util.stream.Collectors;
 @Service
 public class AccountService {
     private final AccountRepository accountRepository;
-    private final ClientService clientService;
+    private final FeignClientService clientService;
 
-    private final HolderRepository holderRepository;
     @Autowired
-    public AccountService(AccountRepository accountRepository, ClientService clientService, HolderRepository holderRepository) {
+    public AccountService(AccountRepository accountRepository, FeignClientService clientService) {
         this.accountRepository = accountRepository;
         this.clientService = clientService;
-        this.holderRepository = holderRepository;
     }
 
-    public Observable<List<AccountRes>> findAll(){
-        return Observable.just(
-                accountRepository.findAll()
-                        .stream()
-                        .map(AccountEntityToRes::map)
-                        .collect(Collectors.toList())
-        );
+    public List<AccountRes> findAll(){
+        return accountRepository.findAll()
+                .stream()
+                .map(AccountEntityToRes::map)
+                .collect(Collectors.toList());
     }
 
-    public Maybe<AccountRes> findAccountById(String id){
-        return Maybe.fromCallable(() -> accountRepository.findById(id).orElse(null))
-                .map(AccountEntityToRes::map);
+    public AccountRes findAccountById(String id){
+        Account account = accountRepository.findById(id).orElse(null))
+        return AccountEntityToRes.map(account);
     }
 
-    public Maybe<List<AccountClientRes>> getAccountsByClient(String clientId){
-        return Maybe.just(
-                accountRepository.findByClientId(clientId)
-                        .stream()
-                        .map(x -> {
-                            AccountRes accountRes = AccountEntityToRes.map(x);
-                            List<HolderRes> holders = holderRepository.findByAccountId(accountRes.getAccountId())
-                                    .stream().map(HolderEntityToRes::map)
-                                    .collect(Collectors.toList());
-                            AccountClientRes res = new AccountClientRes();
-                            res.setAccountId(accountRes.getAccountId());
-                            res.setAccountNumber(accountRes.getAccountNumber());
-                            res.setType(accountRes.getType());
-                            res.setClient(accountRes.getClient());
-                            res.setBalance(accountRes.getBalance());
-                            res.setHolders(holders);
-                            return res;
-                        })
-                        .collect(Collectors.toList())
-        );
-    }
-
-    public Maybe<AccountRes> save(AccountReq accountReq){
-        return Maybe.defer(() -> {
-            ClientTypeRes clientType = clientService.getClientType(accountReq.getClient());
-            Account account;
-
-            if (clientType.getValue().equals("PERSONA")) {
-                account = savePersonAccount(accountReq);
-            } else {
-                account = saveCompanyAccount(accountReq);
-            }
-
-            return Maybe.just(AccountEntityToRes.map(account));
-        });
+    public AccountRes save(AccountReq accountReq){
+        ClientTypeRes clientType = clientService.getClientType(accountReq.getClient());
+        Account account;
+        if (clientType.getValue().equals("PERSONA")) {
+            account = savePersonAccount(accountReq);
+        } else {
+            account = saveCompanyAccount(accountReq);
+        }
+        return AccountEntityToRes.map(account);
     }
 
     public Account savePersonAccount(AccountReq accountReq){
@@ -113,16 +82,13 @@ public class AccountService {
         return account;
     }
 
-    public Maybe<AccountRes> update(String id, AccountReq accountReq){
-
-        return Maybe.defer(() -> {
-            if (accountRepository.existsById(id)) {
-                Account account = AccountReqToEntity.map(accountReq,id);
-                account = accountRepository.save(account);
-                return Maybe.just(AccountEntityToRes.map(account));
-            } else {
-                return Maybe.empty();
-            }
-        });
+    public AccountRes update(String id, AccountReq accountReq){
+        if (accountRepository.existsById(id)) {
+            Account account = AccountReqToEntity.map(accountReq,id);
+            account = accountRepository.save(account);
+            return AccountEntityToRes.map(account);
+        } else {
+            return new AccountRes();
+        }
     }
 }

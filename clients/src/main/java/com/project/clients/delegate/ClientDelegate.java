@@ -25,27 +25,27 @@ public class ClientDelegate implements ClientsApiDelegate {
 
     @Override
     public ResponseEntity<ClientRes> getClientById(String id) {
-        return ResponseEntity.ok(clientService.findClientById(id).blockingGet());
+        return ResponseEntity.ok(clientService.findClientById(id));
     }
 
     @Override
     public ResponseEntity<ClientTypeRes> getClientType(String id) {
-        return ResponseEntity.ok(clientTypeService.getClientType(id).blockingGet());
+        return ResponseEntity.ok(clientTypeService.getClientType(id));
     }
 
     @Override
     public ResponseEntity<List<ClientRes>> getClients() {
-        return ResponseEntity.ok(clientService.findAll().blockingSingle());
+        return ResponseEntity.ok(clientService.findAll());
     }
 
     @Override
     public ResponseEntity<ClientRes> saveClient(ClientReq clientReq) {
-        return ResponseEntity.ok(clientService.save(clientReq).blockingGet());
+        return ResponseEntity.ok(clientService.save(clientReq));
     }
 
     @Override
     public ResponseEntity<ClientRes> updateClient(String id, ClientReq clientReq) {
-        return ResponseEntity.ok(clientService.update(id, clientReq).blockingGet());
+        return ResponseEntity.ok(clientService.update(id, clientReq));
     }
 
 }

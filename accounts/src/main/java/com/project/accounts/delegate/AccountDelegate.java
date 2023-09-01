@@ -22,26 +22,21 @@ public class AccountDelegate implements AccountsApiDelegate {
 
     @Override
     public ResponseEntity<AccountRes> getAccountById(String id) {
-        return ResponseEntity.ok(accountService.findAccountById(id).blockingGet());
+        return ResponseEntity.ok(accountService.findAccountById(id));
     }
 
     @Override
     public ResponseEntity<List<AccountRes>> getAccounts() {
-        return ResponseEntity.ok(accountService.findAll().blockingSingle());
-    }
-
-    @Override
-    public ResponseEntity<List<AccountClientRes>> getAccountsByClient(String id) {
-        return ResponseEntity.ok(accountService.getAccountsByClient(id).blockingGet());
+        return ResponseEntity.ok(accountService.findAll());
     }
 
     @Override
     public ResponseEntity<AccountRes> saveAccount(AccountReq accountReq) {
-        return ResponseEntity.ok(accountService.save(accountReq).blockingGet());
+        return ResponseEntity.ok(accountService.save(accountReq));
     }
 
     @Override
     public ResponseEntity<AccountRes> updateAccount(String id, AccountReq accountReq) {
-        return ResponseEntity.ok(accountService.update(id, accountReq).blockingGet());
+        return ResponseEntity.ok(accountService.update(id, accountReq));
     }
 }

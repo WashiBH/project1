@@ -24,32 +24,31 @@ public class TransactionService {
     @Autowired
     private TransactionEntityToDto mapperEntityToDto;
 
-    public Observable<List<TransactionDTO>> findAll(){
-        return Observable.just(transactionRepository.findAll()
+    public List<TransactionDTO> findAll(){
+        return transactionRepository.findAll()
                 .stream()
                 .map(x -> mapperEntityToDto.map(x))
-                .collect(Collectors.toList())
-        );
+                .collect(Collectors.toList());
     }
 
-    public Maybe<TransactionDTO> findTransactionById(String id){
+    public TransactionDTO findTransactionById(String id){
         Transaction transaction = transactionRepository.findById(id).orElse(null);
-        return Maybe.just(mapperEntityToDto.map(transaction));
+        return mapperEntityToDto.map(transaction);
     }
 
-    public Maybe<TransactionDTO> save(TransactionDTO transactionDto){
+    public TransactionDTO save(TransactionDTO transactionDto){
         Transaction transaction = mapperDtoToEntity.map(transactionDto);
         transaction = transactionRepository.save(transaction);
-        return Maybe.just(mapperEntityToDto.map(transaction));
+        return mapperEntityToDto.map(transaction);
     }
 
-    public Maybe<TransactionDTO> update(String id, TransactionDTO transactionDto){
+    public TransactionDTO update(String id, TransactionDTO transactionDto){
 
         if(transactionRepository.existsById(id)){
             Transaction transaction = mapperDtoToEntity.map(transactionDto);
             transaction = transactionRepository.save(transaction);
         }
 
-        return Maybe.just(transactionDto);
+        return transactionDto;
     }
 }

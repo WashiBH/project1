@@ -9,7 +9,15 @@ servers:
   - url: http://localhost:8582
 tags:
   - name: accounts
+    description: Manejo de cuentas bancarias (AHORRO, CORRIENTE Y PLAZO FIJO).
   - name: holders
+    description: Manejo de titulares con firmantes autorizados de cada cuenta bancaria.
+  - name: clients_accounts
+    description: Cuentas de un cliente.
+  - name: deposits
+    description: Manejo de depositos en las cuentas bancarias.
+  - name: withdrawals
+    description: Manejo de retiros en las cuentas bancarias.
 paths:
   /accounts:
     post:
@@ -87,16 +95,68 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/AccountRes'
-  /accounts/clients/{id}:
-    get:
+  /deposits/{accountId}:
+    patch:
       tags:
-        - accounts
-      summary: Get Account by client
-      operationId: getAccountsByClient
+        - deposits
+      summary: Save account deposit
+      operationId: saveDeposit
       parameters:
-        - name: id
+        - name: accountId
           in: path
           description: Unique id of an account
+          required: true
+          schema:
+            type: string
+        - name: amount
+          in: query
+          description: amount deposit in account
+          required: true
+          schema:
+            type: number
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DepositRes'
+  /withdrawals/{accountId}:
+    patch:
+      tags:
+        - withdrawals
+      summary: Save account withdrawal
+      operationId: saveWithdrawal
+      parameters:
+        - name: accountId
+          in: path
+          description: Unique id of an account
+          required: true
+          schema:
+            type: string
+        - name: amount
+          in: query
+          description: amount withdrawal in account
+          required: true
+          schema:
+            type: number
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AccountRes'
+  /clients/{clientId}/accounts:
+    get:
+      tags:
+        - clients_accounts
+      summary: Get accounts by client
+      operationId: getAccountsByClient
+      parameters:
+        - name: clientId
+          in: path
+          description: Unique client id of accounts
           required: true
           schema:
             type: string
@@ -229,4 +289,10 @@ components:
         authorized:
           type: string
         names:
+          type: string
+    DepositRes:
+      type: object
+      description: Data response for deposit
+      properties:
+        value:
           type: string

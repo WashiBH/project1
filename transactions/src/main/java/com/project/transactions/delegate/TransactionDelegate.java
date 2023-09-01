@@ -20,21 +20,21 @@ public class TransactionDelegate implements TransactionsApiDelegate {
 
     @Override
     public ResponseEntity<TransactionDTO> getTransactionById(String id) {
-        return ResponseEntity.ok(transactionService.findTransactionById(id).blockingGet());
+        return ResponseEntity.ok(transactionService.findTransactionById(id));
     }
 
     @Override
     public ResponseEntity<List<TransactionDTO>> getTransactions() {
-        return ResponseEntity.ok(transactionService.findAll().blockingSingle());
+        return ResponseEntity.ok(transactionService.findAll());
     }
 
     @Override
     public ResponseEntity<TransactionDTO> saveTransaction(TransactionDTO transactionDTO) {
-        return ResponseEntity.ok(transactionService.save(transactionDTO).blockingGet());
+        return ResponseEntity.ok(transactionService.save(transactionDTO));
     }
 
     @Override
     public ResponseEntity<TransactionDTO> updateTransaction(String id, TransactionDTO transactionDTO) {
-        return ResponseEntity.ok(transactionService.update(id, transactionDTO).blockingGet());
+        return ResponseEntity.ok(transactionService.update(id, transactionDTO));
     }
 }

@@ -18,16 +18,14 @@ public class ClientTypeService {
         this.clientRepository = clientRepository;
     }
 
-    public Single<ClientTypeRes> getClientType(String clientId) {
-        return Single.create(singleSubscriber -> {
-            Client client = clientRepository.findById(clientId).orElse(null);
-            if (client != null) {
-                ClientTypeRes response = new ClientTypeRes();
-                response.setValue(client.getClientType());
-                singleSubscriber.onSuccess(response);
-            } else {
-                singleSubscriber.onError(new ClientNotFoundException("Cliente no encontrado"));
-            }
-        });
+    public ClientTypeRes getClientType(String clientId) {
+        Client client = clientRepository.findById(clientId).orElse(null);
+        if (client != null) {
+            ClientTypeRes response = new ClientTypeRes();
+            response.setValue(client.getClientType());
+            return response;
+        } else {
+            return new ClientTypeRes();
+        }
     }
 }

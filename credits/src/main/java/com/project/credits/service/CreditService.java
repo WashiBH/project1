@@ -24,32 +24,31 @@ public class CreditService {
     @Autowired
     private CreditEntityToDto mapperEntityToDto;
 
-    public Observable<List<CreditDTO>> findAll(){
-        return Observable.just(creditRepository.findAll()
+    public List<CreditDTO> findAll(){
+        return creditRepository.findAll()
                 .stream()
                 .map(x -> mapperEntityToDto.map(x))
-                .collect(Collectors.toList())
-        );
+                .collect(Collectors.toList());
     }
 
-    public Maybe<CreditDTO> findCreditById(String id){
+    public CreditDTO findCreditById(String id){
         Credit credit = creditRepository.findById(id).orElse(null);
-        return Maybe.just(mapperEntityToDto.map(credit));
+        return mapperEntityToDto.map(credit);
     }
 
-    public Maybe<CreditDTO> save(CreditDTO creditDto){
+    public CreditDTO save(CreditDTO creditDto){
         Credit credit = mapperDtoToEntity.map(creditDto);
         credit = creditRepository.save(credit);
-        return Maybe.just(mapperEntityToDto.map(credit));
+        return mapperEntityToDto.map(credit);
     }
 
-    public Maybe<CreditDTO> update(String id, CreditDTO creditDto){
+    public CreditDTO update(String id, CreditDTO creditDto){
 
         if(creditRepository.existsById(id)){
             Credit credit = mapperDtoToEntity.map(creditDto);
             credit = creditRepository.save(credit);
         }
 
-        return Maybe.just(creditDto);
+        return creditDto;
     }
 }

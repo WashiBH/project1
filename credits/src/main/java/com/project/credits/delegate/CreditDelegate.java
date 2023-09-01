@@ -20,21 +20,21 @@ public class CreditDelegate implements CreditsApiDelegate {
 
     @Override
     public ResponseEntity<CreditDTO> getCreditById(String id) {
-        return ResponseEntity.ok(creditService.findCreditById(id).blockingGet());
+        return ResponseEntity.ok(creditService.findCreditById(id));
     }
 
     @Override
     public ResponseEntity<List<CreditDTO>> getCredits() {
-        return ResponseEntity.ok(creditService.findAll().blockingSingle());
+        return ResponseEntity.ok(creditService.findAll());
     }
 
     @Override
     public ResponseEntity<CreditDTO> saveCredit(CreditDTO creditDTO) {
-        return ResponseEntity.ok(creditService.save(creditDTO).blockingGet());
+        return ResponseEntity.ok(creditService.save(creditDTO));
     }
 
     @Override
     public ResponseEntity<CreditDTO> updateCredit(String id, CreditDTO creditDTO) {
-        return ResponseEntity.ok(creditService.update(id, creditDTO).blockingGet());
+        return ResponseEntity.ok(creditService.update(id, creditDTO));
     }
 }
