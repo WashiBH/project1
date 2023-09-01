@@ -146,7 +146,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/AccountRes'
+                $ref: '#/components/schemas/WithdrawalRes'
   /clients/{clientId}/accounts:
     get:
       tags:
@@ -293,6 +293,12 @@ components:
     DepositRes:
       type: object
       description: Data response for deposit
+      properties:
+        value:
+          type: string
+    WithdrawalRes:
+      type: object
+      description: Data response for withdrawal
       properties:
         value:
           type: string

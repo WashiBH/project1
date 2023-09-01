@@ -37,7 +37,7 @@ public class AccountService {
     }
 
     public AccountRes findAccountById(String id){
-        Account account = accountRepository.findById(id).orElse(null))
+        Account account = accountRepository.findById(id).orElse(null);
         return AccountEntityToRes.map(account);
     }
 
@@ -54,23 +54,21 @@ public class AccountService {
 
     public Account savePersonAccount(AccountReq accountReq){
         Account account = AccountReqToEntity.map(accountReq,null);
-        List<Account> accounts = accountRepository.findByClientIdAndAccountType(accountReq.getClient(), accountReq.getType().getValue());
-        if(accountReq.getType().equals(AccountReq.TypeEnum.AHORRO)){
-            if(accounts.isEmpty()){
-                account = accountRepository.save(account);
-            }
+        if(accountReq.getType().equals(AccountReq.TypeEnum.AHORRO) && isAccountsEmpty(accountReq.getClient(), accountReq.getType().getValue())){
+            account = accountRepository.save(account);
         }
-        if(accountReq.getType().equals(AccountReq.TypeEnum.CORRIENTE)){
-            if(accounts.isEmpty()){
-                account = accountRepository.save(account);
-            }
+        if(accountReq.getType().equals(AccountReq.TypeEnum.CORRIENTE) && isAccountsEmpty(accountReq.getClient(), accountReq.getType().getValue())){
+            account = accountRepository.save(account);
         }
-        if(accountReq.getType().equals(AccountReq.TypeEnum.PLAZO_FIJO)){
-            if(accounts.isEmpty()){
-                account = accountRepository.save(account);
-            }
+        if(accountReq.getType().equals(AccountReq.TypeEnum.PLAZO_FIJO) && isAccountsEmpty(accountReq.getClient(), accountReq.getType().getValue())){
+            account = accountRepository.save(account);
         }
         return account;
+    }
+
+    public boolean isAccountsEmpty(String clientId, String accountType){
+        List<Account> accounts = accountRepository.findByClientIdAndAccountType(clientId, accountType);
+        return accounts.isEmpty();
     }
 
     public Account saveCompanyAccount(AccountReq accountReq){

@@ -7,25 +7,31 @@ info:
 
 servers:
   - url: http://localhost:8584
-
+tags:
+  - name: transactions
+    description: Manejo de transacciones o movimientos bancarios
 paths:
   /transactions:
     post:
+      tags:
+        - transactions
       summary: Save Transaction
       operationId: saveTransaction
       requestBody:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/TransactionDTO'
+              $ref: '#/components/schemas/TransactionReq'
       responses:
         200:
           description: OK
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/TransactionDTO'
+                $ref: '#/components/schemas/TransactionRes'
     get:
+      tags:
+        - transactions
       summary: Get transactions
       operationId: getTransactions
       responses:
@@ -36,10 +42,12 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/TransactionDTO'
+                  $ref: '#/components/schemas/TransactionRes'
   /transactions/{id}:
     get:
-      summary: Get Transaction by id
+      tags:
+        - transactions
+      summary: Get transaction by id
       operationId: getTransactionById
       parameters:
         - name: id
@@ -54,8 +62,10 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/TransactionDTO'
+                $ref: '#/components/schemas/TransactionRes'
     put:
+      tags:
+        - transactions
       summary: Update Transaction
       operationId: updateTransaction
       parameters:
@@ -69,18 +79,42 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/TransactionDTO'
+              $ref: '#/components/schemas/TransactionReq'
       responses:
         200:
           description: OK
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/TransactionDTO'
+                $ref: '#/components/schemas/TransactionRes'
 
 components:
   schemas:
-    TransactionDTO:
+    TransactionReq:
+      type: object
+      description: Data element for transaction
+      properties:
+        client:
+          type: string
+        type:
+          type: string
+          enum:
+            - DEPOSITO
+            - RETIRO
+            - PAGO
+        amount:
+          type: number
+        origin:
+          type: string
+        destiny:
+          type: string
+      required:
+        - client
+        - type
+        - amount
+        - origin
+        - destiny
+    TransactionRes:
       type: object
       description: Data element for transaction
       properties:

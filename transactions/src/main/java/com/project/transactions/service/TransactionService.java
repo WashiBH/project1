@@ -1,15 +1,15 @@
 package com.project.transactions.service;
 
 import com.project.transactions.entity.Transaction;
-import com.project.transactions.mapper.TransactionDtoToEntity;
-import com.project.transactions.mapper.TransactionEntityToDto;
-import com.project.transactions.model.TransactionDTO;
+import com.project.transactions.mapper.TransactionEntityToRes;
+import com.project.transactions.mapper.TransactionReqToEntity;
+import com.project.transactions.model.TransactionReq;
+import com.project.transactions.model.TransactionRes;
 import com.project.transactions.repository.TransactionRepository;
-import io.reactivex.rxjava3.core.Maybe;
-import io.reactivex.rxjava3.core.Observable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -19,36 +19,64 @@ public class TransactionService {
     private TransactionRepository transactionRepository;
 
     @Autowired
-    private TransactionDtoToEntity mapperDtoToEntity;
+    private FeignDepositService depositService;
 
     @Autowired
-    private TransactionEntityToDto mapperEntityToDto;
+    private FeignWithdrawalService withdrawalService;
 
-    public List<TransactionDTO> findAll(){
+    public List<TransactionRes> findAll(){
         return transactionRepository.findAll()
                 .stream()
-                .map(x -> mapperEntityToDto.map(x))
+                .map(TransactionEntityToRes::map)
                 .collect(Collectors.toList());
     }
 
-    public TransactionDTO findTransactionById(String id){
+    public TransactionRes findTransactionById(String id){
         Transaction transaction = transactionRepository.findById(id).orElse(null);
-        return mapperEntityToDto.map(transaction);
+        return TransactionEntityToRes.map(transaction);
     }
 
-    public TransactionDTO save(TransactionDTO transactionDto){
-        Transaction transaction = mapperDtoToEntity.map(transactionDto);
-        transaction = transactionRepository.save(transaction);
-        return mapperEntityToDto.map(transaction);
-    }
-
-    public TransactionDTO update(String id, TransactionDTO transactionDto){
-
-        if(transactionRepository.existsById(id)){
-            Transaction transaction = mapperDtoToEntity.map(transactionDto);
-            transaction = transactionRepository.save(transaction);
+    public TransactionRes save(TransactionReq transactionReq){
+        if(isADeposit(transactionReq) && isValidDepositInAccount(transactionReq)){
+            return saveTransaction(transactionReq);
         }
+        if(isAWithdrawal(transactionReq) && isValidWithdrawalInAccount(transactionReq)){
+            return saveTransaction(transactionReq);
+        }
+        return new TransactionRes();
+    }
 
-        return transactionDto;
+    private boolean isADeposit(TransactionReq transactionReq){
+        return transactionReq.getType().equals(TransactionReq.TypeEnum.DEPOSITO);
+    }
+
+    private boolean isValidDepositInAccount(TransactionReq transactionReq){
+        DepositRes depositRes = depositService.getDepositResponse(transactionReq.getDestiny(),transactionReq.getAmount());
+        return depositRes.getValue().equals("OK");
+    }
+
+    private boolean isAWithdrawal(TransactionReq transactionReq){
+        return transactionReq.getType().equals(TransactionReq.TypeEnum.RETIRO);
+    }
+
+    private boolean isValidWithdrawalInAccount(TransactionReq transactionReq){
+        WithdrawalRes withdrawalRes = withdrawalService.getWithdrawalResponse(transactionReq.getDestiny(),transactionReq.getAmount());
+        return withdrawalRes.getValue().equals("OK");
+    }
+
+    private TransactionRes saveTransaction(TransactionReq transactionReq){
+        Transaction transaction = TransactionReqToEntity.map(transactionReq,null);
+        transaction = transactionRepository.save(transaction);
+        return TransactionEntityToRes.map(transaction);
+    }
+
+    public TransactionRes update(String id, TransactionReq transactionReq){
+        if(transactionRepository.existsById(id)){
+            Transaction transaction = TransactionReqToEntity.map(transactionReq, id);
+            transaction = transactionRepository.save(transaction);
+            return TransactionEntityToRes.map(transaction);
+        }else {
+            return new TransactionRes();
+        }
     }
 }
