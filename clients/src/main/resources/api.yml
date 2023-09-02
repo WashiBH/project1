@@ -119,7 +119,9 @@ components:
           type: string
           enum:
             - PERSONA
+            - PERSONA_VIP
             - EMPRESA
+            - PYME
         name:
           type: string
         fatherLastName:

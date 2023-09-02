@@ -8,24 +8,31 @@ info:
 servers:
   - url: http://localhost:8583
 
+tags:
+  - name: credits
+
 paths:
   /credits:
     post:
+      tags:
+        - credits
       summary: Save Credit
       operationId: saveCredit
       requestBody:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/CreditDTO'
+              $ref: '#/components/schemas/CreditReq'
       responses:
         200:
           description: OK
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/CreditDTO'
+                $ref: '#/components/schemas/CreditRes'
     get:
+      tags:
+        - credits
       summary: Get credits
       operationId: getCredits
       responses:
@@ -36,9 +43,11 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/CreditDTO'
+                  $ref: '#/components/schemas/CreditRes'
   /credits/{id}:
     get:
+      tags:
+        - credits
       summary: Get Credit by id
       operationId: getCreditById
       parameters:
@@ -54,8 +63,10 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/CreditDTO'
+                $ref: '#/components/schemas/CreditRes'
     put:
+      tags:
+        - credits
       summary: Update Credit
       operationId: updateCredit
       parameters:
@@ -69,18 +80,18 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/CreditDTO'
+              $ref: '#/components/schemas/CreditReq'
       responses:
         200:
           description: OK
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/CreditDTO'
+                $ref: '#/components/schemas/CreditRes'
 
 components:
   schemas:
-    CreditDTO:
+    CreditReq:
       type: object
       description: Data element for credit
       properties:
@@ -91,6 +102,24 @@ components:
           enum:
             - PERSONA
             - EMPRESA
+            - TARJETA_CREDITO_PERSONA
+            - TARJETA_CREDITO_EMPRESA
+        client:
+          type: string
+        amount:
+          type: number
+      required:
+        - type
+        - client
+        - amount
+    CreditRes:
+      type: object
+      description: Data element for credit
+      properties:
+        creditId:
+          type: string
+        type:
+          type: string
         client:
           type: string
         amount:
