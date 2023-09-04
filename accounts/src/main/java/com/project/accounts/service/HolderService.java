@@ -8,71 +8,127 @@ import com.project.accounts.model.HolderReq;
 import com.project.accounts.model.HolderRes;
 import com.project.accounts.repository.AccountRepository;
 import com.project.accounts.repository.HolderRepository;
-import io.reactivex.rxjava3.core.Maybe;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+/**
+ * Holder service.
+ */
 @Service
 public class HolderService {
-    private final AccountRepository accountRepository;
-    private final HolderRepository holderRepository;
-    private final FeignClientService clientService;
-    @Autowired
-    public HolderService(HolderRepository holderRepository, AccountRepository accountRepository, FeignClientService clientService) {
-        this.holderRepository = holderRepository;
-        this.accountRepository = accountRepository;
-        this.clientService = clientService;
-    }
+  private final AccountRepository accountRepository;
+  private final HolderRepository holderRepository;
+  private final FeignClientService clientService;
 
-    public HolderRes save(HolderReq holderReq) {
-        if(isValidToSaveHolder(holderReq.getAccount())){
-            Holder holder = getHolderValidatingAuthorizationSignature(holderReq, null);
-            return HolderEntityToRes.map(holderRepository.save(holder));
-        } else {
-            return new HolderRes();
-        }
-    }
+  /**
+   * Constructor.
+   *
+   * @param holderRepository Holder repository.
+   * @param accountRepository Account repository.
+   * @param clientService Feign client service.
+   */
+  @Autowired
+  public HolderService(HolderRepository holderRepository,
+                       AccountRepository accountRepository,
+                       FeignClientService clientService) {
+    this.holderRepository = holderRepository;
+    this.accountRepository = accountRepository;
+    this.clientService = clientService;
+  }
 
-    public HolderRes update(String id, HolderReq holderReq) {
-        if(isValidToSaveHolder(holderReq.getAccount())){
-            Holder holder = getHolderValidatingAuthorizationSignature(holderReq, id);
-            return HolderEntityToRes.map(holderRepository.save(holder));
-        } else {
-            return new HolderRes();
-        }
+  /**
+   * Save holder.
+   *
+   * @param holderReq Holder request object.
+   * @return Holder response object.
+   */
+  public HolderRes save(HolderReq holderReq) {
+    if (isValidToSaveHolder(holderReq.getAccount())) {
+      Holder holder = getHolderValidatingAuthorizationSignature(holderReq, null);
+      return HolderEntityToRes.map(holderRepository.save(holder));
+    } else {
+      return new HolderRes();
     }
+  }
 
-    private boolean isValidToSaveHolder(String accountId){
-        String clientId = getClientId(accountId);
-        return clientId != null && isCompanyClientType(clientId);
+  /**
+   * Update holder.
+   *
+   * @param id Holder id.
+   * @param holderReq Holder request.
+   * @return Holder response.
+   */
+  public HolderRes update(String id, HolderReq holderReq) {
+    if (isValidToSaveHolder(holderReq.getAccount())) {
+      Holder holder = getHolderValidatingAuthorizationSignature(holderReq, id);
+      return HolderEntityToRes.map(holderRepository.save(holder));
+    } else {
+      return new HolderRes();
     }
+  }
 
-    private String getClientId(String accountId){
-        Account account = accountRepository.findById(accountId).orElse(null);
-        return account != null ? account.getClientId() : null;
-    }
+  /**
+   * Validate if holder is valid to save.
+   *
+   * @param accountId Account id.
+   * @return true or false.
+   */
+  private boolean isValidToSaveHolder(String accountId) {
+    String clientId = getClientId(accountId);
+    return clientId != null && isCompanyClientType(clientId);
+  }
 
-    private boolean isCompanyClientType(String clientId){
-        ClientTypeRes clientType = clientService.getClientType(clientId);
-        return clientType.getValue().equals("EMPRESA");
-    }
+  /**
+   * Get client id from account.
+   *
+   * @param accountId Accout id.
+   * @return Client id.
+   */
+  private String getClientId(String accountId) {
+    Account account = accountRepository.findById(accountId).orElse(null);
+    return account != null ? account.getClientId() : null;
+  }
 
-    private Holder getHolderValidatingAuthorizationSignature(HolderReq holderReq, String holderId){
-        Holder holder = HolderReqToEntity.map(holderReq, holderId);
-        if(holder.getAuthorizedSignatory().equals("SI")){
-            if(isNotValidAuthorizationSignature(holderReq.getAccount())){
-                holder.setAuthorizedSignatory("NO");
-            }
-        }
-        return holder;
-    }
+  /**
+   * Verify if client type is company type.
+   *
+   * @param clientId Client id.
+   * @return true or false.
+   */
+  private boolean isCompanyClientType(String clientId) {
+    ClientTypeRes clientType = clientService.getClientType(clientId);
+    return clientType.getValue().equals("EMPRESA");
+  }
 
-    private boolean isNotValidAuthorizationSignature(String accountId){
-        long numberHoldersAuthorizedSignatory = holderRepository.findByAccountId(accountId)
-                .stream()
-                .filter(h -> h.getAuthorizedSignatory().equals("SI"))
-                .count();
-        return numberHoldersAuthorizedSignatory >= 4;
+  /**
+   * Get validated holder if authorized or not to sign account.
+   *
+   * @param holderReq Holder request to validate.
+   * @param holderId Holder id.
+   * @return Holder object.
+   */
+  private Holder getHolderValidatingAuthorizationSignature(HolderReq holderReq, String holderId) {
+    Holder holder = HolderReqToEntity.map(holderReq, holderId);
+    if (holder.getAuthorizedSignatory().equals("SI")) {
+      if (isNotValidAuthorizationSignature(holderReq.getAccount())) {
+        holder.setAuthorizedSignatory("NO");
+      }
     }
+    return holder;
+  }
+
+  /**
+   * Verify if the account already has four authorized signatories.
+   *
+   * @param accountId Account id.
+   * @return true ro false.
+   */
+  private boolean isNotValidAuthorizationSignature(String accountId) {
+    long numberHoldersAuthorizedSignatory = holderRepository.findByAccountId(accountId)
+        .stream()
+        .filter(h -> h.getAuthorizedSignatory().equals("SI"))
+        .count();
+    return numberHoldersAuthorizedSignatory >= 4;
+  }
 
 }

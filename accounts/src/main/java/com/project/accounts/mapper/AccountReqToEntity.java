@@ -2,23 +2,30 @@ package com.project.accounts.mapper;
 
 import com.project.accounts.entity.Account;
 import com.project.accounts.model.AccountReq;
+import java.util.function.BiFunction;
 import org.springframework.stereotype.Component;
 
-import java.util.function.BiFunction;
-import java.util.function.Function;
-
+/**
+ * Mapper class for map AccountReq class to Account class.
+ */
 @Component
 public class AccountReqToEntity {
-    public static Account map(AccountReq accountReq, String id) {
-        BiFunction<AccountReq, String, Account> map = (t, u) -> {
-            return new Account(
-                    u,
-                    "-",
-                    t.getType().getValue(),
-                    t.getClient(),
-                    t.getBalance()
-            );
-        };
-        return map.apply(accountReq, id);
-    }
+  /**
+   * Mapper method: AccountReq to Account.
+   *
+   * @param accountReq AccountReq object.
+   * @param id accountId.
+   * @return Account object.
+   */
+  public static Account map(AccountReq accountReq, String id) {
+    BiFunction<AccountReq, String, Account> map = (t, u) -> {
+      return new Account(
+        u, "-",
+        t.getType().getValue(),
+        t.getClient(),
+        t.getBalance()
+      );
+    };
+    return map.apply(accountReq, id);
+  }
 }

@@ -8,45 +8,68 @@ import com.project.accounts.model.AccountRes;
 import com.project.accounts.model.HolderRes;
 import com.project.accounts.repository.AccountRepository;
 import com.project.accounts.repository.HolderRepository;
-import io.reactivex.rxjava3.core.Maybe;
+import java.util.List;
+import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-import java.util.stream.Collectors;
-
+/**
+ * Accounts of the clients service.
+ */
 @Service
 public class ClientAccountsService {
 
-    private final AccountRepository accountRepository;
-    private final HolderRepository holderRepository;
+  private final AccountRepository accountRepository;
+  private final HolderRepository holderRepository;
 
-    @Autowired
-    public ClientAccountsService(AccountRepository accountRepository, HolderRepository holderRepository) {
-        this.accountRepository = accountRepository;
-        this.holderRepository = holderRepository;
-    }
+  @Autowired
+  public ClientAccountsService(AccountRepository accountRepository,
+                               HolderRepository holderRepository) {
+    this.accountRepository = accountRepository;
+    this.holderRepository = holderRepository;
+  }
 
-    public List<AccountClientRes> getAccountsByClient(String clientId){
-        return accountRepository.findByClientId(clientId)
-                .stream()
-                .map(this::mapAccountToAccountClientRes)
-                .collect(Collectors.toList());
-    }
+  /**
+   * Get accounts by client.
+   *
+   * @param clientId Client id.
+   * @return List of accounts by client.
+   */
+  public List<AccountClientRes> getAccountsByClient(String clientId) {
+    return accountRepository.findByClientId(clientId)
+      .stream()
+      .map(this::mapAccountToAccountClientRes)
+      .collect(Collectors.toList());
+  }
 
-    private AccountClientRes mapAccountToAccountClientRes(Account account){
-        AccountRes accountRes = AccountEntityToRes.map(account);
-        List<HolderRes> holders = holderRepository.findByAccountId(accountRes.getAccountId())
-                .stream()
-                .map(HolderEntityToRes::map)
-                .collect(Collectors.toList());
-        AccountClientRes res = new AccountClientRes();
-        res.setAccountId(accountRes.getAccountId());
-        res.setAccountNumber(accountRes.getAccountNumber());
-        res.setType(accountRes.getType());
-        res.setClient(accountRes.getClient());
-        res.setBalance(accountRes.getBalance());
-        res.setHolders(holders);
-        return res;
-    }
+  /**
+   * Mapper Account class to AccountClient response class.
+   *
+   * @param account Account object.
+   * @return AccountClient response object.
+   */
+  private AccountClientRes mapAccountToAccountClientRes(Account account) {
+    AccountRes accountRes = AccountEntityToRes.map(account);
+    AccountClientRes res = new AccountClientRes();
+    res.setAccountId(accountRes.getAccountId());
+    res.setAccountNumber(accountRes.getAccountNumber());
+    res.setType(accountRes.getType());
+    res.setClient(accountRes.getClient());
+    res.setBalance(accountRes.getBalance());
+    res.setHolders(findHoldersByAccountId(accountRes.getAccountId()));
+    return res;
+  }
+
+  /**
+   * Find holders by account.
+   *
+   * @param accountId account id.
+   * @return Lis of holders.
+   */
+  private List<HolderRes> findHoldersByAccountId(String accountId) {
+    return holderRepository.findByAccountId(accountId)
+      .stream()
+      .map(HolderEntityToRes::map)
+      .collect(Collectors.toList());
+  }
 }
