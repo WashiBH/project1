@@ -17,10 +17,13 @@ import org.springframework.stereotype.Service;
 @Service
 public class ClientService {
   private final ClientRepository clientRepository;
+  private final FeignExistClientCreditCardService existClientCreditCardService;
 
   @Autowired
-  public ClientService(ClientRepository clientRepository) {
+  public ClientService(ClientRepository clientRepository,
+                       FeignExistClientCreditCardService existClientCreditCardService) {
     this.clientRepository = clientRepository;
+    this.existClientCreditCardService = existClientCreditCardService;
   }
 
   /**
@@ -53,7 +56,24 @@ public class ClientService {
    * @return Client response object.
    */
   public ClientRes save(ClientReq clientReq) {
-    Client client = ClientReqToEntity.map(clientReq, null);
+    Client client = clientRepository.findByDocumentNumber(clientReq.getDocumentNumber());
+    if (existClient(client)) {
+      if (clientReq.getClientType().equals(ClientReq.ClientTypeEnum.PERSONA_VIP)
+          && isClientWithCreditCard(client.getId())) {
+        client.setClientType(ClientReq.ClientTypeEnum.PERSONA_VIP.getValue());
+      } else if (clientReq.getClientType().equals(ClientReq.ClientTypeEnum.PYME)
+          && isClientWithCreditCard(client.getId())) {
+        client.setClientType(ClientReq.ClientTypeEnum.PYME.getValue());
+      }
+    } else {
+      client = ClientReqToEntity.map(clientReq, null);
+      if (clientReq.getClientType().equals(ClientReq.ClientTypeEnum.PERSONA_VIP)) {
+        client.setClientType(ClientReq.ClientTypeEnum.PERSONA.getValue());
+      }
+      if (clientReq.getClientType().equals(ClientReq.ClientTypeEnum.PYME)) {
+        client.setClientType(ClientReq.ClientTypeEnum.EMPRESA.getValue());
+      }
+    }
     client = clientRepository.save(client);
     return ClientEntityToRes.map(client);
   }
@@ -61,18 +81,33 @@ public class ClientService {
   /**
    * Update client.
    *
-   * @param id Client id.
+   * @param id        Client id.
    * @param clientReq Client request object.
    * @return Client response object.
    */
   public ClientRes update(String id, ClientReq clientReq) {
     if (clientRepository.existsById(id)) {
       Client client = ClientReqToEntity.map(clientReq, id);
+      if (clientReq.getClientType().equals(ClientReq.ClientTypeEnum.PERSONA_VIP)
+          && isClientWithCreditCard(client.getId())) {
+        client.setClientType(ClientReq.ClientTypeEnum.PERSONA_VIP.getValue());
+      } else if (clientReq.getClientType().equals(ClientReq.ClientTypeEnum.PYME)
+          && isClientWithCreditCard(client.getId())) {
+        client.setClientType(ClientReq.ClientTypeEnum.PYME.getValue());
+      }
       client = clientRepository.save(client);
       return ClientEntityToRes.map(client);
     } else {
       return new ClientRes();
     }
+  }
+
+  private boolean existClient(Client client) {
+    return client != null;
+  }
+
+  private boolean isClientWithCreditCard(String clientId) {
+    return existClientCreditCardService.getIfClientHasCreditCard(clientId).getValue().equals("SI");
   }
 
 }

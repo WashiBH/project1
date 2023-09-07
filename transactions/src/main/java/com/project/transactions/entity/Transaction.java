@@ -1,6 +1,7 @@
 package com.project.transactions.entity;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -19,7 +20,9 @@ public class Transaction {
   private String id;
   private String clientId;
   private String transactionType;
-  private BigDecimal amount;
   private String originAccount;
   private String destinyAccount;
+  private BigDecimal amount;
+  private BigDecimal commission;
+  private LocalDateTime createdAt;
 }

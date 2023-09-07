@@ -10,6 +10,7 @@ servers:
 
 tags:
   - name: credits
+  - name: clients
 
 paths:
   /credits:
@@ -88,6 +89,26 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/CreditRes'
+  /clients/{clientId}/credit-card:
+    get:
+      tags:
+        - clients
+      summary: Get response if client has a credit card
+      operationId: getIfClientHasCreditCard
+      parameters:
+        - name: clientId
+          in: path
+          description: Unique clientId
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExistClientCreditCardRes'
 
 components:
   schemas:
@@ -102,8 +123,7 @@ components:
           enum:
             - PERSONA
             - EMPRESA
-            - TARJETA_CREDITO_PERSONA
-            - TARJETA_CREDITO_EMPRESA
+            - TARJETA_CREDITO
         client:
           type: string
         amount:
@@ -128,3 +148,9 @@ components:
         - type
         - client
         - amount
+    ExistClientCreditCardRes:
+      type: object
+      description: Data element for exists client credit card response
+      properties:
+        value:
+          type: string
