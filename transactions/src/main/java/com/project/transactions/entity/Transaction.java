@@ -25,4 +25,30 @@ public class Transaction {
   private BigDecimal amount;
   private BigDecimal commission;
   private LocalDateTime createdAt;
+
+  /**
+   * Specific constructor.
+   *
+   * @param id              accountId
+   * @param clientId        clientId
+   * @param transactionType transactionType
+   * @param originAccount   originAccount
+   * @param destinyAccount  destinyAccount
+   * @param amount          amount
+   */
+  public Transaction(
+      String id,
+      String clientId,
+      String transactionType,
+      String originAccount,
+      String destinyAccount,
+      BigDecimal amount
+  ) {
+    this.id = id;
+    this.clientId = clientId;
+    this.transactionType = transactionType;
+    this.originAccount = originAccount;
+    this.destinyAccount = destinyAccount;
+    this.amount = amount;
+  }
 }

@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 /**
  * Feign account withdrawal service.
  */
-@FeignClient(name = "account-service", url = "http://localhost:8582")
+@FeignClient(name = "account-withdrawal-service", url = "http://localhost:8582")
 public interface FeignWithdrawalService {
   @PatchMapping("/withdrawals/{accountId}")
   public WithdrawalRes getWithdrawalResponse(@PathVariable("accountId") String accountId,

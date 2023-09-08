@@ -18,12 +18,22 @@ import org.springframework.stereotype.Service;
 public class ClientService {
   private final ClientRepository clientRepository;
   private final FeignExistClientCreditCardService existClientCreditCardService;
+  private final FeignClientCheckingAccountService clientCheckingAccountService;
 
+  /**
+   * Constructor.
+   *
+   * @param clientRepository Client repository object.
+   * @param existClientCreditCardService Feign client credit card service.
+   * @param clientCheckingAccountService Feign client checking account service.
+   */
   @Autowired
   public ClientService(ClientRepository clientRepository,
-                       FeignExistClientCreditCardService existClientCreditCardService) {
+                       FeignExistClientCreditCardService existClientCreditCardService,
+                       FeignClientCheckingAccountService clientCheckingAccountService) {
     this.clientRepository = clientRepository;
     this.existClientCreditCardService = existClientCreditCardService;
+    this.clientCheckingAccountService = clientCheckingAccountService;
   }
 
   /**
@@ -62,7 +72,8 @@ public class ClientService {
           && isClientWithCreditCard(client.getId())) {
         client.setClientType(ClientReq.ClientTypeEnum.PERSONA_VIP.getValue());
       } else if (clientReq.getClientType().equals(ClientReq.ClientTypeEnum.PYME)
-          && isClientWithCreditCard(client.getId())) {
+          && isClientWithCreditCard(client.getId())
+          && isClientWithCheckingAccount(client.getId())) {
         client.setClientType(ClientReq.ClientTypeEnum.PYME.getValue());
       }
     } else {
@@ -92,7 +103,8 @@ public class ClientService {
           && isClientWithCreditCard(client.getId())) {
         client.setClientType(ClientReq.ClientTypeEnum.PERSONA_VIP.getValue());
       } else if (clientReq.getClientType().equals(ClientReq.ClientTypeEnum.PYME)
-          && isClientWithCreditCard(client.getId())) {
+          && isClientWithCreditCard(client.getId())
+          && isClientWithCheckingAccount(client.getId())) {
         client.setClientType(ClientReq.ClientTypeEnum.PYME.getValue());
       }
       client = clientRepository.save(client);
@@ -108,6 +120,10 @@ public class ClientService {
 
   private boolean isClientWithCreditCard(String clientId) {
     return existClientCreditCardService.getIfClientHasCreditCard(clientId).getValue().equals("SI");
+  }
+
+  private boolean isClientWithCheckingAccount(String clientId) {
+    return !clientCheckingAccountService.getCheckingAccountsByClient(clientId).isEmpty();
   }
 
 }

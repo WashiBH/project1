@@ -87,6 +87,40 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/TransactionRes'
+  /transactions/{clientId}/{year}/{month}:
+    get:
+      tags:
+        - transactions
+      summary: Get transaction by client, year and month.
+      operationId: getClientTransactions
+      parameters:
+        - name: clientId
+          in: path
+          description: Unique client id
+          required: true
+          schema:
+            type: string
+        - name: year
+          in: path
+          description: Unique year
+          required: true
+          schema:
+            type: integer
+        - name: month
+          in: path
+          description: Unique month
+          required: true
+          schema:
+            type: integer
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/TransactionRes'
 
 components:
   schemas:
@@ -130,9 +164,3 @@ components:
           type: string
         destiny:
           type: string
-      required:
-        - client
-        - type
-        - amount
-        - origin
-        - destiny

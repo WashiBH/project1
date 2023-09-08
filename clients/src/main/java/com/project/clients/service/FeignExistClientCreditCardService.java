@@ -5,7 +5,7 @@ import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import java.math.BigDecimal;
 
-@FeignClient(name = "transaction-service", url = "http://localhost:8584")
+@FeignClient(name = "credit-service", url = "http://localhost:8583")
 public interface FeignExistClientCreditCardService {
   @PatchMapping("/clients/{clientId}/credit-card")
   public ExistClientCreditCardRes getIfClientHasCreditCard(@PathVariable("clientId") String clientId);

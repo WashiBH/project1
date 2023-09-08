@@ -10,6 +10,9 @@ import org.springframework.stereotype.Component;
  */
 @Component
 public class AccountEntityToRes {
+  private AccountEntityToRes() {
+  }
+
   /**
    * Mapper method: Account to AccountRes.
    *
@@ -17,7 +20,7 @@ public class AccountEntityToRes {
    * @return AccountRes object.
    */
   public static AccountRes map(Account account) {
-    Function<Account, AccountRes> map = (in) -> {
+    Function<Account, AccountRes> map = in -> {
       AccountRes accountRes = new AccountRes();
       accountRes.setAccountId(in.getId());
       accountRes.setAccountNumber(in.getAccountNumber());

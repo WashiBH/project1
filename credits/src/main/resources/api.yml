@@ -109,7 +109,28 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ExistClientCreditCardRes'
-
+  /clients/{clientId}/credits:
+    get:
+      tags:
+        - clients
+      summary: Get client credits response.
+      operationId: getClientCredits
+      parameters:
+        - name: clientId
+          in: path
+          description: Unique clientId
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/CreditRes'
 components:
   schemas:
     CreditReq:

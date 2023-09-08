@@ -19,16 +19,14 @@ public class TransactionReqToEntity {
    * @return Transaction response object.
    */
   public static Transaction map(TransactionReq transactionReq, String id) {
-    BiFunction<TransactionReq, String, Transaction> map = (t, u) -> {
-      return new Transaction(
-        u,
-        t.getClient(),
-        t.getType().getValue(),
-        t.getAmount(),
-        t.getOrigin(),
-        t.getDestiny()
-      );
-    };
+    BiFunction<TransactionReq, String, Transaction> map = (t, u) -> new Transaction (
+      u,
+      t.getClient(),
+      t.getType().getValue(),
+      t.getOrigin(),
+      t.getDestiny(),
+      t.getAmount()
+    );
     return map.apply(transactionReq, id);
   }
 }

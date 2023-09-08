@@ -1,0 +1,61 @@
+openapi: '3.0.0'
+
+info:
+  version: 1.0.0
+  title: Reports
+  description: Gestión de reportes
+
+servers:
+  - url: http://localhost:8585
+tags:
+  - name: reports
+    description: Consulta de reportes.
+paths:
+  /reports/{clientId}/products/summary/{year}/{month}:
+    get:
+      tags:
+        - reports
+      summary: Get products summary
+      operationId: getClientProductsSummary
+      parameters:
+        - name: clientId
+          in: path
+          description: Unique client id for summary
+          required: true
+          schema:
+            type: string
+        - name: year
+          in: path
+          description: Unique year
+          required: true
+          schema:
+            type: integer
+        - name: month
+          in: path
+          description: Unique month
+          required: true
+          schema:
+            type: integer
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ReportProductSummaryRes'
+components:
+  schemas:
+    ReportProductSummaryRes:
+      type: object
+      description: Data element for product summary
+      properties:
+        client:
+          type: string
+        product:
+          type: string
+        date:
+          type: string
+        balance:
+          type: number

@@ -10,22 +10,24 @@ import org.springframework.stereotype.Component;
  */
 @Component
 public class AccountReqToEntity {
+  private AccountReqToEntity() {
+  }
+
   /**
    * Mapper method: AccountReq to Account.
    *
    * @param accountReq AccountReq object.
-   * @param id accountId.
+   * @param id         accountId.
    * @return Account object.
    */
   public static Account map(AccountReq accountReq, String id) {
-    BiFunction<AccountReq, String, Account> map = (t, u) -> {
-      return new Account(
+    BiFunction<AccountReq, String, Account> map = (t, u) -> new Account(
         u, "-",
         t.getType().getValue(),
         t.getClient(),
         t.getBalance()
-      );
-    };
+    );
+
     return map.apply(accountReq, id);
   }
 }

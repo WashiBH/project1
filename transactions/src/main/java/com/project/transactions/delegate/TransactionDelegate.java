@@ -22,6 +22,15 @@ public class TransactionDelegate implements TransactionsApiDelegate {
   }
 
   @Override
+  public ResponseEntity<List<TransactionRes>> getClientTransactions(
+      String clientId,
+      Integer year,
+      Integer month
+  ) {
+    return ResponseEntity.ok(transactionService.getClientTransactions(clientId, year, month));
+  }
+
+  @Override
   public ResponseEntity<TransactionRes> getTransactionById(String id) {
     return ResponseEntity.ok(transactionService.findTransactionById(id));
   }

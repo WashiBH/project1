@@ -10,6 +10,9 @@ import org.springframework.stereotype.Component;
  */
 @Component
 public class HolderReqToEntity {
+  private HolderReqToEntity() {
+  }
+
   /**
    * Method mapper: HolderReq to Holder.
    *
@@ -18,14 +21,12 @@ public class HolderReqToEntity {
    * @return Holder object.
    */
   public static Holder map(HolderReq holderReq, String id) {
-    BiFunction<HolderReq, String, Holder> map = (t, u) -> {
-      return new Holder(
+    BiFunction<HolderReq, String, Holder> map = (t, u) -> new Holder(
         u,
         t.getAccount(),
         t.getAuthorized().getValue(),
         t.getNames()
-      );
-    };
+    );
     return map.apply(holderReq, id);
   }
 }

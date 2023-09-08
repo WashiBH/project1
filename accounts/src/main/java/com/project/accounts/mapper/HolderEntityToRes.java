@@ -10,6 +10,9 @@ import org.springframework.stereotype.Component;
  */
 @Component
 public class HolderEntityToRes {
+  private HolderEntityToRes() {
+  }
+
   /**
    * Mapper method: Holder to HolderRes.
    *
@@ -17,7 +20,7 @@ public class HolderEntityToRes {
    * @return HolderRes object.
    */
   public static HolderRes map(Holder holder) {
-    Function<Holder, HolderRes> map = (in) -> {
+    Function<Holder, HolderRes> map = in -> {
       HolderRes holderRes = new HolderRes();
       holderRes.setHolderId(in.getId());
       holderRes.setAccount(in.getAccountId());

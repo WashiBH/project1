@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 /**
  * Feign account deposit service.
  */
-@FeignClient(name = "account-service", url = "http://localhost:8582")
+@FeignClient(name = "account-deposit-service", url = "http://localhost:8582")
 public interface FeignDepositService {
   @PatchMapping("/deposits/{accountId}")
   public DepositRes getDepositResponse(@PathVariable("accountId") String accountId,

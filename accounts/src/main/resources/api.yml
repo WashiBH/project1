@@ -169,6 +169,28 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/AccountClientRes'
+  /clients/{clientId}/checking-account:
+    get:
+      tags:
+        - clients_accounts
+      summary: Get checking accounts by client
+      operationId: getCheckingAccountsByClient
+      parameters:
+        - name: clientId
+          in: path
+          description: Unique client id of accounts
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/CheckingAccountRes'
   /holders:
     post:
       tags:
@@ -265,6 +287,18 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/HolderRes'
+    CheckingAccountRes:
+      type: object
+      description: Data element for checking account
+      properties:
+        accountNumber:
+          type: string
+        type:
+          type: string
+        client:
+          type: string
+        balance:
+          type: number
     HolderReq:
       type: object
       description: Data element for holder

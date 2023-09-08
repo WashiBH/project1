@@ -2,6 +2,7 @@ package com.project.accounts.delegate;
 
 import com.project.accounts.api.ClientsApiDelegate;
 import com.project.accounts.model.AccountClientRes;
+import com.project.accounts.model.CheckingAccountRes;
 import com.project.accounts.service.ClientAccountsService;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,5 +22,10 @@ public class ClientAccountsDelegate implements ClientsApiDelegate {
   @Override
   public ResponseEntity<List<AccountClientRes>> getAccountsByClient(String clientId) {
     return ResponseEntity.ok(clientAccountsService.getAccountsByClient(clientId));
+  }
+
+  @Override
+  public ResponseEntity<List<CheckingAccountRes>> getCheckingAccountsByClient(String clientId) {
+    return ResponseEntity.ok(clientAccountsService.getCheckingAccountsByClient(clientId));
   }
 }

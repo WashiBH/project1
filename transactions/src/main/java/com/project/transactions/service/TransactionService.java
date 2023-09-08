@@ -6,6 +6,9 @@ import com.project.transactions.mapper.TransactionReqToEntity;
 import com.project.transactions.model.TransactionReq;
 import com.project.transactions.model.TransactionRes;
 import com.project.transactions.repository.TransactionRepository;
+import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -50,6 +53,32 @@ public class TransactionService {
       .collect(Collectors.toList());
   }
 
+  /**
+   * List of client transactions at year and month.
+   *
+   * @param clientId clientId
+   * @param year year
+   * @param month month
+   * @return List of client transactions.
+   */
+  public List<TransactionRes> getClientTransactions(String clientId, Integer year, Integer month) {
+    return transactionRepository.findByClientId(clientId)
+      .stream()
+      .filter(transaction -> isClientTransactionAtYearAndMonth(year, month, transaction))
+      .map(TransactionEntityToRes::map)
+      .collect(Collectors.toList());
+  }
+
+  private boolean isClientTransactionAtYearAndMonth(
+      Integer year,
+      Integer month,
+      Transaction transaction
+  ) {
+    int transactionMonth = transaction.getCreatedAt().getMonthValue();
+    int transactionYear = transaction.getCreatedAt().getYear();
+    return transactionYear == year && transactionMonth == month;
+  }
+
   public TransactionRes findTransactionById(String id) {
     Transaction transaction = transactionRepository.findById(id).orElse(null);
     return TransactionEntityToRes.map(transaction);
@@ -62,10 +91,12 @@ public class TransactionService {
    * @return Transaction response object.
    */
   public TransactionRes save(TransactionReq transactionReq) {
-    if (isAccountDeposit(transactionReq) && isValidDepositInAccount(transactionReq)) {
+    if (isAccountDeposit(transactionReq)
+        && isValidDepositInAccount(transactionReq)) {
       return saveTransaction(transactionReq);
     }
-    if (isAccountWithdrawal(transactionReq) && isValidWithdrawalInAccount(transactionReq)) {
+    if (isAccountWithdrawal(transactionReq)
+        && isValidWithdrawalInAccount(transactionReq)) {
       return saveTransaction(transactionReq);
     }
     return new TransactionRes();
@@ -97,8 +128,40 @@ public class TransactionService {
 
   private TransactionRes saveTransaction(TransactionReq transactionReq) {
     Transaction transaction = TransactionReqToEntity.map(transactionReq, null);
+    transaction.setCommission(calculateCommission(transactionReq));
+    transaction.setCreatedAt(LocalDateTime.now());
     transaction = transactionRepository.save(transaction);
     return TransactionEntityToRes.map(transaction);
+  }
+
+  private BigDecimal calculateCommission(TransactionReq transactionReq) {
+    double commission = 0;
+    if (!isValidLimitTransactions(transactionReq)) {
+      double amount = transactionReq.getAmount().doubleValue();
+      double percentageCommission = 0.015;
+      commission = amount * percentageCommission;
+    }
+    return BigDecimal.valueOf(commission);
+  }
+
+  private boolean isValidLimitTransactions(TransactionReq transactionReq) {
+    String clientId = transactionReq.getClient();
+    long limitTransactions = 20;
+    List<Transaction> transactions = transactionRepository.findByClientId(clientId);
+    long clientTransactionNumbers = transactions
+        .stream()
+        .filter(transaction ->
+          isClientTransactionInThisMonth(LocalDate.now().getMonthValue(), transaction)
+        )
+        .count();
+    return clientTransactionNumbers <= limitTransactions;
+  }
+
+  private boolean isClientTransactionInThisMonth(int month, Transaction transaction) {
+    int transactionMonth = transaction.getCreatedAt().getMonthValue();
+    return transactionMonth == month
+      && (transaction.getTransactionType().equals(TransactionReq.TypeEnum.DEPOSITO.getValue())
+      || transaction.getTransactionType().equals(TransactionReq.TypeEnum.RETIRO.getValue()));
   }
 
   /**

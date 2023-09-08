@@ -1,10 +1,13 @@
 package com.project.accounts.service;
 
 import com.project.accounts.entity.Account;
+import com.project.accounts.mapper.AccountEntityToCheckingAccountRes;
 import com.project.accounts.mapper.AccountEntityToRes;
 import com.project.accounts.mapper.HolderEntityToRes;
 import com.project.accounts.model.AccountClientRes;
+import com.project.accounts.model.AccountReq;
 import com.project.accounts.model.AccountRes;
+import com.project.accounts.model.CheckingAccountRes;
 import com.project.accounts.model.HolderRes;
 import com.project.accounts.repository.AccountRepository;
 import com.project.accounts.repository.HolderRepository;
@@ -39,6 +42,20 @@ public class ClientAccountsService {
     return accountRepository.findByClientId(clientId)
       .stream()
       .map(this::mapAccountToAccountClientRes)
+      .collect(Collectors.toList());
+  }
+
+  /**
+   * Method to list of checking accounts of a client.
+   *
+   * @param clientId Client id.
+   * @return List of checking accounts.
+   */
+  public List<CheckingAccountRes> getCheckingAccountsByClient(String clientId) {
+    String accountType = AccountReq.TypeEnum.CORRIENTE.getValue();
+    return accountRepository.findByClientIdAndAccountType(clientId, accountType)
+      .stream()
+      .map(AccountEntityToCheckingAccountRes::map)
       .collect(Collectors.toList());
   }
 
