@@ -11,6 +11,9 @@ import org.springframework.stereotype.Component;
 @Component
 public class TransactionReqToEntity {
 
+  private TransactionReqToEntity() {
+  }
+
   /**
    * Mapper method: Transaction request class to Transaction entity class.
    *

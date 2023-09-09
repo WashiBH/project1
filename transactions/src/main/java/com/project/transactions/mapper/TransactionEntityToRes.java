@@ -11,6 +11,9 @@ import org.springframework.stereotype.Component;
 @Component
 public class TransactionEntityToRes {
 
+  private TransactionEntityToRes() {
+  }
+
   /**
    * Mapper method: Transaction entity class to Transaction response class.
    *
@@ -18,7 +21,7 @@ public class TransactionEntityToRes {
    * @return Transaction response object.
    */
   public static TransactionRes map(Transaction transaction) {
-    Function<Transaction, TransactionRes> map = (in) -> {
+    Function<Transaction, TransactionRes> map = in -> {
       TransactionRes transactionRes = new TransactionRes();
       transactionRes.setTransactionId(in.getId());
       transactionRes.setClient(in.getClientId());
@@ -26,6 +29,7 @@ public class TransactionEntityToRes {
       transactionRes.setAmount(in.getAmount());
       transactionRes.setOrigin(in.getOriginAccount());
       transactionRes.setDestiny(in.getDestinyAccount());
+      transactionRes.setCreateAt(in.getCreatedAt().toString());
       return transactionRes;
     };
     return map.apply(transaction);
